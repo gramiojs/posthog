@@ -3,7 +3,7 @@
  *
  * Posthog plugin for GramIO
  */
-import { Plugin } from "gramio";
+import { Plugin, type UpdateName } from "gramio";
 import type { PostHog } from "posthog-node";
 import { extractFromContext } from "./utils.ts";
 
@@ -36,7 +36,7 @@ const events = [
 	"migrate_to_chat_id",
 	"new_chat_members",
 	"chat_shared",
-] as const;
+] as const satisfies UpdateName[];
 
 // TODO: Auto-trackable events
 export function posthogPlugin(posthog: PostHog) {
