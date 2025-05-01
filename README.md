@@ -8,6 +8,7 @@
 ```ts
 import { PostHog } from "posthog-node";
 import { posthogPlugin } from "@gramio/posthog";
+import { Bot } from "gramio";
 
 const posthog = new PostHog(process.env.POSTHOG_API_KEY!, {
     host: process.env.POSTHOG_HOST,
@@ -19,8 +20,11 @@ const bot = new Bot(process.env.BOT_TOKEN!)
         context.capture("message", {
             text: context.message.text,
         });
+
         throw new Error("Will be captured by PostHog");
     });
 
 await bot.start();
 ```
+
+For better documentation, see the [GramIO - PostHog](https://gramio.dev/plugins/posthog).

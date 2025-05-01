@@ -5,7 +5,16 @@
  */
 import { Plugin, type UpdateName } from "gramio";
 import type { PostHog } from "posthog-node";
-import { extractFromContext } from "./utils.ts";
+import {
+	type GetAllFlagsOptions,
+	type GetAllFlagsPayloadOptions,
+	type GetFeatureFlagOptions,
+	type GetFeatureFlagPayloadOptions,
+	type GetFeatureFlagPayloadValue,
+	type IsFeatureEnabledOptions,
+	type PostHogFlagsAndPayloadsResponse,
+	extractFromContext,
+} from "./utils.ts";
 
 const events = [
 	"message",
@@ -53,13 +62,48 @@ export function posthogPlugin(posthog: PostHog) {
 			});
 		})
 		.derive(events, async (context) => {
+			const distinctId = context.from?.id.toString() || "";
 			return {
 				capture: (event: string, properties: Record<string, unknown>) => {
 					posthog.capture({
-						distinctId: context.from!.id!.toString(),
+						distinctId,
 						event,
 						properties,
 					});
+				},
+				featureFlags: {
+					isEnabled: (feature: string, options?: IsFeatureEnabledOptions) => {
+						return posthog.isFeatureEnabled(feature, distinctId, options);
+					},
+
+					getPayload: (
+						feature: string,
+						value?: GetFeatureFlagPayloadValue,
+						options?: GetFeatureFlagPayloadOptions,
+					) => {
+						return posthog.getFeatureFlagPayload(
+							feature,
+							distinctId,
+							value,
+							options,
+						);
+					},
+
+					get: (feature: string, options?: GetFeatureFlagOptions) => {
+						return posthog.getFeatureFlag(feature, distinctId, options);
+					},
+
+					getAll: (options?: GetAllFlagsOptions) => {
+						return posthog.getAllFlags(distinctId, options);
+					},
+
+					getAllPayload: (options?: GetAllFlagsPayloadOptions) => {
+						return posthog.getAllFlagsAndPayloads(
+							distinctId,
+							options,
+							// idk why but TS doesn't work without it correctly
+						) as Promise<PostHogFlagsAndPayloadsResponse>;
+					},
 				},
 			};
 		});

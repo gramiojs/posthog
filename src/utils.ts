@@ -1,4 +1,5 @@
 import type { Context } from "gramio";
+import type { PostHog } from "posthog-node";
 
 export function extractFromContext(
 	context: Context<any>,
@@ -28,3 +29,27 @@ export function extractFromContext(
 
 	return senderId;
 }
+
+export type IsFeatureEnabledOptions = Parameters<
+	PostHog["isFeatureEnabled"]
+>[2];
+
+export type GetFeatureFlagOptions = Parameters<PostHog["getFeatureFlag"]>[2];
+
+export type GetFeatureFlagPayloadValue = Parameters<
+	PostHog["getFeatureFlagPayload"]
+>[2];
+
+export type GetFeatureFlagPayloadOptions = Parameters<
+	PostHog["getFeatureFlagPayload"]
+>[3];
+
+export type GetAllFlagsOptions = Parameters<PostHog["getAllFlags"]>[1];
+
+export type GetAllFlagsPayloadOptions = Parameters<
+	PostHog["getAllFlagsAndPayloads"]
+>[1];
+
+export type PostHogFlagsAndPayloadsResponse = Awaited<
+	ReturnType<PostHog["getAllFlagsAndPayloads"]>
+>;
